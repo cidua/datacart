@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx" xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd"
+       default-init-method="init">
+
+    <context:annotation-config/>
+
+    <context:component-scan base-package="com.datacart.model" scoped-proxy="targetClass"/>
+
+    <tx:annotation-driven transaction-manager="tenantTxManager" proxy-target-class="true"/>
+    <tx:annotation-driven transaction-manager="commonTxManager" proxy-target-class="true"/>
+
+    <bean id="exceptionTranslationInterceptor"
+          class="org.springframework.dao.support.PersistenceExceptionTranslationInterceptor"/>
+    <aop:config>
+        <aop:advisor advice-ref="exceptionTranslationInterceptor"
+                     pointcut="execution(* com.datacart.model.dao.spi.GenericDao+.* (*))"/>
+    </aop:config>
+
+
+    <bean id="tenantDataSource" class="com.jolbox.bonecp.BoneCPDataSource">
+        <property name="driverClass" value="org.postgresql.Driver"/>
+        <property name="jdbcUrl" value="${database.url}"/>
+        <property name="username" value="${database.username}"/>
+        <property name="password" value="${database.password}"/>
+        <property name="idleConnectionTestPeriodInMinutes" value="${bonecp.idleConnectionTestPeriodInMinutes}"/>
+        <property name="idleMaxAgeInMinutes" value="${bonecp.idleMaxAgeInMinutes}"/>
+        <property name="maxConnectionsPerPartition" value="${bonecp.maxConnectionsPerPartition}"/>
+        <property name="minConnectionsPerPartition" value="${bonecp.minConnectionsPerPartition}"/>
+        <property name="partitionCount" value="${bonecp.partitionCount}"/>
+        <property name="acquireIncrement" value="${bonecp.acquireIncrement}"/>
+        <property name="releaseHelperThreads" value="${bonecp.releaseHelperThreads}"/>
+    </bean>
+
+    <bean id="tenantSessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
+        <property name="dataSource" ref="tenantDataSource"/>
+        <property name="packagesToScan">
+            <list>
+                <value>com.datacart.model.objects.tenants</value>
+            </list>
+        </property>
+        <property name="hibernateProperties" ref="hibernateProperties"/>
+    </bean>
+
+    <bean id="tenantTxManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+        <qualifier value="tenantTxManager"/>
+        <property name="sessionFactory" ref="tenantSessionFactory"/>
+    </bean>
+
+    <bean id="commonDataSource" class="com.jolbox.bonecp.BoneCPDataSource">
+        <property name="driverClass" value="org.postgresql.Driver"/>
+        <property name="jdbcUrl" value="${database.url}"/>
+        <property name="username" value="${database.username}"/>
+        <property name="password" value="${database.password}"/>
+        <property name="idleConnectionTestPeriodInMinutes" value="${bonecp.idleConnectionTestPeriodInMinutes}"/>
+        <property name="idleMaxAgeInMinutes" value="${bonecp.idleMaxAgeInMinutes}"/>
+        <property name="maxConnectionsPerPartition" value="${bonecp.maxConnectionsPerPartition}"/>
+        <property name="minConnectionsPerPartition" value="${bonecp.minConnectionsPerPartition}"/>
+        <property name="partitionCount" value="${bonecp.partitionCount}"/>
+        <property name="acquireIncrement" value="${bonecp.acquireIncrement}"/>
+        <property name="releaseHelperThreads" value="${bonecp.releaseHelperThreads}"/>
+    </bean>
+
+    <bean id="commonSessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
+        <property name="dataSource" ref="commonDataSource"/>
+        <property name="packagesToScan">
+            <list>
+                <value>com.datacart.model.objects.common</value>
+                <value>com.datacart.model.objects.security</value>
+            </list>
+        </property>
+        <property name="hibernateProperties" ref="hibernateProperties"/>
+    </bean>
+
+    <bean id="commonTxManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+        <qualifier value="commonTxManager"/>
+        <property name="sessionFactory" ref="tenantSessionFactory"/>
+    </bean>
+
+    <bean id="hibernateProperties" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+        <property name="properties">
+            <props>
+                <prop key="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</prop>
+                <prop key="hibernate.show_sql">false</prop>
+                <prop key="hibernate.format_sql">true</prop>
+                <prop key="hibernate.jdbc.batch_size">100</prop>
+                <prop key="hibernate.cache.use_query_cache">false</prop>
+                <prop key="hibernate.cache.use_second_level_cache">false</prop>
+            </props>
+        </property>
+    </bean>
+</beans>
