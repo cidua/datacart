@@ -4,6 +4,8 @@ import com.datacart.model.objects.AbstractEntity;
 import com.datacart.model.objects.enums.UserTenantRelationStatus;
 
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -35,6 +37,7 @@ public class UserTenantRelation extends AbstractEntity {
 	@JoinColumn(name = "tenantid")
 	private Tenant tenant;
 
+	@Enumerated(EnumType.STRING)
 	private UserTenantRelationStatus status;
 
 	private Calendar createDate;

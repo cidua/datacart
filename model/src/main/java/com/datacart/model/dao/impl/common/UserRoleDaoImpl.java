@@ -1,17 +1,17 @@
 package com.datacart.model.dao.impl.common;
 
 import com.datacart.model.dao.impl.GenericDaoImpl;
-import com.datacart.model.dao.spi.common.TenantDao;
-import com.datacart.model.objects.common.Tenant;
+import com.datacart.model.dao.spi.common.UserRoleDao;
+import com.datacart.model.objects.common.UserRole;
 import org.hibernate.Session;
 import org.springframework.stereotype.Repository;
 
 /**
- * @author Dmitriy Sinenkiy - Team International
- * @since 2.0
+ * @author Dmitriy Sinenkiy
+ * @since 1.0
  */
 @Repository
-public class TenantDaoImpl extends GenericDaoImpl<Tenant> implements TenantDao{
+public class UserRoleDaoImpl extends GenericDaoImpl<UserRole> implements UserRoleDao {
 	@Override
 	protected Session getCurrentSession() {
 		return sessions.getCommonSession();

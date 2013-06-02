@@ -1,0 +1,7 @@
+CREATE TABLE encounter (
+	id     BIGSERIAL PRIMARY KEY,
+	action CHARACTER VARYING,
+	startedat TIMESTAMP WITH TIME ZONE
+);
+
+ALTER TABLE encounter OWNER TO datacart;
