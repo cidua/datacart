@@ -10,6 +10,7 @@
 	<modules>
 		<module>model</module>
 		<module>webservice</module>
+		<module>view</module>
 	</modules>
 	<packaging>pom</packaging>
 
@@ -142,6 +143,11 @@
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-core</artifactId>
 			<version>3.1.4.RELEASE</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-webmvc</artifactId>
+			<version>3.0.3.RELEASE</version>
 		</dependency>
 		<dependency>
 			<groupId>org.aspectj</groupId>
